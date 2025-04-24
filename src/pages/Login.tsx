@@ -9,6 +9,8 @@ const Login = () => {
       const res = await loginApi(inputs);
       if (res) {
         message.success(res.message);
+        localStorage.setItem("user", JSON.stringify(res.data));
+        window.location.href = "/";
       }
     } catch (e) {
       if (e instanceof Error) {
