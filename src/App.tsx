@@ -9,6 +9,7 @@ import "./styles/layout.css";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import Loader from "./components/Loader";
+import Profile from "./pages/user/profile";
 
 function App() {
   const isLoading = useSelector((state: RootState) => state.alert.loading);
@@ -39,6 +40,14 @@ function App() {
               <PublicRoute>
                 <Register />
               </PublicRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
             }
           />
         </Routes>
