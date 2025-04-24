@@ -2,7 +2,7 @@ import { Col, Form, Row } from "antd";
 
 const PersonalInfo = () => {
   return (
-    <Form>
+    <>
       <Row gutter={[10, 10]}>
         <Col span={8}>
           <Form.Item
@@ -64,7 +64,7 @@ const PersonalInfo = () => {
           </Form.Item>
         </Col>
       </Row>
-    </Form>
+    </>
   );
 };
 

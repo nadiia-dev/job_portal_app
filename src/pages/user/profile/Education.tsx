@@ -2,7 +2,7 @@ import { Col, Form, Row } from "antd";
 
 const Education = () => {
   return (
-    <Form>
+    <>
       <Form.List name="education">
         {(fields, { add, remove }) => (
           <>
@@ -92,7 +92,7 @@ const Education = () => {
           </>
         )}
       </Form.List>
-    </Form>
+    </>
   );
 };
 
