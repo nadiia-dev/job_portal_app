@@ -1,22 +1,44 @@
 import { useNavigate, useParams } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
-import { Form, Col, Row } from "antd";
-import { useState } from "react";
+import { Form, Col, Row, message } from "antd";
+// import { useState } from "react";
 import { Job } from "../../../types/Job";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../../redux/alertSlice";
+import { saveJob } from "../../../api/jobsApi";
 
 const NewEditJob = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [jobData, setJobData] = useState();
+  const dispatch = useDispatch();
+  //   const [jobData, setJobData] = useState<Job | null>(null);
 
-  const onFinish = (values: Job) => {
-    console.log(values);
+  const onFinish = async (values: Job) => {
+    try {
+      dispatch(showLoading());
+      const res = await saveJob(values);
+      dispatch(hideLoading());
+      if (res) {
+        if (res.success) {
+          message.success(res.message);
+          navigate("/posted-jobs");
+        } else {
+          message.error(res.message);
+        }
+        dispatch(hideLoading());
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        dispatch(hideLoading());
+        message.error(e.message);
+      }
+    }
   };
 
   return (
     <div>
       <PageTitle title={params.id ? "Edit Job" : "Add New Job Post"} />
-      <Form layout="vertical" onFinish={onFinish} initialValues={jobData}>
+      <Form layout="vertical" onFinish={onFinish}>
         <Row gutter={[10, 10]}>
           <Col span={12}>
             <Form.Item
@@ -51,7 +73,7 @@ const NewEditJob = () => {
             >
               <select name="" id="">
                 <option value="">Select</option>
-                <option value="india">India</option>
+                <option value="ukraine">Ukraine</option>
                 <option value="usa">USA</option>
                 <option value="uk">UK</option>
               </select>
