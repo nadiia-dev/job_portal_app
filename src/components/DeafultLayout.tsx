@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user")!);
   const userMenu = [
     {
       title: "Home",
@@ -39,7 +40,6 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
       path: "/login",
     },
   ];
-  const user = JSON.parse(localStorage.getItem("user")!);
   return (
     <div className="layout">
       <div className="sidebar justify-content-between flex">
