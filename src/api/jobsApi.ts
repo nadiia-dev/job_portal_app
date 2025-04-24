@@ -1,7 +1,8 @@
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { Job } from "../types/Job";
 import { fireDb } from "../firebaseConfig";
 import moment from "moment";
+import { DisplayJob } from "../types/DisplayJob";
 
 export const saveJob = async (payload: Job) => {
   const user = JSON.parse(localStorage.getItem("user")!);
@@ -20,6 +21,31 @@ export const saveJob = async (payload: Job) => {
   } catch (e) {
     if (e instanceof Error) {
       console.error(e);
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const getJobsByUser = async (userId: string) => {
+  try {
+    const docSnap = await getDocs(collection(fireDb, "jobs"));
+    const jobs: DisplayJob[] = [];
+    docSnap.forEach((doc) => {
+      if (doc.data().postedByUserId === userId) {
+        jobs.push({
+          ...(doc.data() as DisplayJob),
+        });
+      }
+    });
+    return {
+      success: true,
+      data: jobs,
+    };
+  } catch (e) {
+    if (e instanceof Error) {
       return {
         success: false,
         message: "Something went wrong",
