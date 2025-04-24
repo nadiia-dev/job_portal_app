@@ -2,12 +2,18 @@ import { Form, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { registerApi } from "../api/authApi";
 import { User } from "../types/User";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../redux/alertSlice";
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const onFinish = async (values: User) => {
     try {
+      dispatch(showLoading());
       const res = await registerApi(values);
+      dispatch(hideLoading());
       if (res) {
         if (res.success) {
           message.success(res.message);
@@ -17,6 +23,7 @@ const Register = () => {
         }
       }
     } catch (e) {
+      dispatch(hideLoading());
       if (e instanceof Error) {
         message.error(e.message);
       }

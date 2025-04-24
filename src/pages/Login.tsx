@@ -2,22 +2,30 @@ import { Form, message } from "antd";
 import { Link } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 import { User } from "../types/User";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../redux/alertSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const onFinish = async (inputs: User) => {
     try {
+      dispatch(showLoading());
       const res = await loginApi(inputs);
+      dispatch(hideLoading());
       if (res) {
         message.success(res.message);
         localStorage.setItem("user", JSON.stringify(res.data));
         window.location.href = "/";
       }
     } catch (e) {
+      dispatch(hideLoading());
       if (e instanceof Error) {
         message.error(e.message);
       }
     }
   };
+
   return (
     <div className="bg-primary h-screen d-flex justify-content-center align-items-center">
       <div className="w-[600px] bg-white p-4 ">
