@@ -12,3 +12,17 @@
   height: 80px;
   width: 80px;
 }
+
+.page-title h2 {
+  font-size: 25px !important;
+  text-transform: uppercase;
+}
+
+.underline {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
