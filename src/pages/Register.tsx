@@ -1,8 +1,27 @@
-import { Form } from "antd";
-import { Link } from "react-router-dom";
+import { Form, message } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import { registerApi } from "../api/authApi";
+import { User } from "../types/User";
 
 const Register = () => {
-  const onFinish = () => {};
+  const navigate = useNavigate();
+  const onFinish = async (values: User) => {
+    try {
+      const res = await registerApi(values);
+      if (res) {
+        if (res.success) {
+          message.success(res.message);
+          navigate("/login");
+        } else {
+          message.error(res.message);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  };
   return (
     <div className="bg-primary h-screen d-flex justify-content-center align-items-center">
       <div className="w-[600px] bg-white p-4 ">
@@ -16,10 +35,10 @@ const Register = () => {
             <input type="text" />
           </Form.Item>
           <Form.Item name="password" label="Password">
-            <input type="text" />
+            <input type="password" />
           </Form.Item>
           <button className="primary-contained-btn w-200 mt-2" type="submit">
-            Login
+            Register
           </button>
           <Link to="/login" className="d-block mt-2">
             Already a member? Click here to login

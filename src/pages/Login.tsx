@@ -1,8 +1,21 @@
-import { Form } from "antd";
+import { Form, message } from "antd";
 import { Link } from "react-router-dom";
+import { loginApi } from "../api/authApi";
+import { User } from "../types/User";
 
 const Login = () => {
-  const onFinish = () => {};
+  const onFinish = async (inputs: User) => {
+    try {
+      const res = await loginApi(inputs);
+      if (res) {
+        message.success(res.message);
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error(e.message);
+      }
+    }
+  };
   return (
     <div className="bg-primary h-screen d-flex justify-content-center align-items-center">
       <div className="w-[600px] bg-white p-4 ">
@@ -13,7 +26,7 @@ const Login = () => {
             <input type="text" />
           </Form.Item>
           <Form.Item name="password" label="Password">
-            <input type="text" />
+            <input type="password" />
           </Form.Item>
           <button className="primary-contained-btn w-200 mt-2" type="submit">
             Login
