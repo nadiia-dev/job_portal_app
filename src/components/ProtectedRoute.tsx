@@ -1,9 +1,16 @@
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+import DefaultLayout from "./DeafultLayout";
+
+type ProtectedRouteProps = {
+  children: React.ReactNode;
+};
+
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const user = JSON.parse(localStorage.getItem("user")!);
   if (user) {
-    return children;
+    return <DefaultLayout>{children}</DefaultLayout>;
   } else {
     window.location.href = "/login";
+    return null;
   }
 };
 

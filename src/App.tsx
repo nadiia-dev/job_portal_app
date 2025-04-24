@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import "./styles/customComponents.css";
+import "./styles/layout.css";
 import { useSelector } from "react-redux";
 import { RootState } from "./redux/store";
 import Loader from "./components/Loader";
