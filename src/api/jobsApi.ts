@@ -192,6 +192,7 @@ export const getApplicationsByUserId = async (userId: string) => {
     querySnapshot.forEach((doc) => {
       applications.push({
         ...(doc.data() as Application),
+        id: doc.id,
       });
     });
     return {
@@ -219,6 +220,7 @@ export const getApplicationsByJobId = async (jobId: string) => {
     querySnapshot.forEach((doc) => {
       applications.push({
         ...(doc.data() as Application),
+        id: doc.id,
       });
     });
     return {
@@ -243,11 +245,32 @@ export const getAllApplications = async () => {
     querySnapshot.forEach((doc) => {
       applications.push({
         ...(doc.data() as Application),
+        id: doc.id,
       });
     });
     return {
       success: true,
       data: applications,
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const changeApplicationStatus = async (payload: Application) => {
+  try {
+    await updateDoc(doc(fireDb, "applications", payload.id), {
+      ...payload,
+      updatedOn: moment().format("DD-MM-YYYY HH:mm A"),
+    });
+    return {
+      success: true,
+      message: "Application status updated successfully",
     };
   } catch (e) {
     if (e instanceof Error) {

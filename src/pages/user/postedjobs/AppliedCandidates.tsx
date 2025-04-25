@@ -1,6 +1,9 @@
-import { Modal, Table } from "antd";
+import { message, Modal, Table } from "antd";
 import { Application } from "../../../types/Application";
 import { useNavigate } from "react-router-dom";
+import { hideLoading, showLoading } from "../../../redux/alertSlice";
+import { useDispatch } from "react-redux";
+import { changeApplicationStatus } from "../../../api/jobsApi";
 
 interface Props {
   showAppliedCandidates: boolean;
@@ -16,7 +19,36 @@ const AppliedCandidates = ({
   reloadData,
 }: Props) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const changeStatus = async (applicationData: Application, status: string) => {
+    try {
+      dispatch(showLoading());
+      const response = await changeApplicationStatus({
+        ...applicationData,
+        status,
+      });
+      dispatch(hideLoading());
+      if (response) {
+        if (response.success) {
+          message.success(response.message);
+          reloadData(applicationData.jobId);
+        } else {
+          message.error(response.message);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        message.error("Something went wrong");
+        dispatch(hideLoading());
+      }
+    }
+  };
   const columns = [
+    {
+      title: "Id",
+      dataIndex: "id",
+    },
     {
       title: "Name",
       dataIndex: "userName",
@@ -42,6 +74,32 @@ const AppliedCandidates = ({
     {
       title: "Status",
       dataIndex: "status",
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: (text: string, record: Application) => {
+        return (
+          <div>
+            {record.status === "pending" && (
+              <>
+                <span
+                  className="underline"
+                  onClick={() => changeStatus(record, "approved")}
+                >
+                  Approve
+                </span>
+                <span
+                  className="underline mx-2"
+                  onClick={() => changeStatus(record, "rejected")}
+                >
+                  Reject
+                </span>
+              </>
+            )}
+          </div>
+        );
+      },
     },
   ];
 
