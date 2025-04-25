@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
-import { useEffect, useState } from "react";
-import { getJobsByUser } from "../../../api/jobsApi";
+import { useCallback, useEffect, useState } from "react";
+import { deleteJob, getJobsByUser } from "../../../api/jobsApi";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../../redux/alertSlice";
 import { message, Table } from "antd";
@@ -12,6 +12,42 @@ const PostedJobs = () => {
   const user = JSON.parse(localStorage.getItem("user")!);
   const dispatch = useDispatch();
   const [data, setData] = useState<DisplayJob[]>([]);
+
+  const getDocs = useCallback(async () => {
+    try {
+      dispatch(showLoading());
+      const res = await getJobsByUser(user.id);
+      if (res) {
+        if (res.success) {
+          setData(res.data!);
+        }
+      }
+      dispatch(hideLoading());
+    } catch (e) {
+      if (e instanceof Error) {
+        dispatch(hideLoading());
+        message.error(e.message);
+      }
+    }
+  }, [dispatch, user.id]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      dispatch(showLoading());
+      const res = await deleteJob(id);
+      if (res) {
+        if (res.success) {
+          getDocs();
+        }
+      }
+      dispatch(hideLoading());
+    } catch (e) {
+      if (e instanceof Error) {
+        dispatch(hideLoading());
+        message.error(e.message);
+      }
+    }
+  };
 
   const columns = [
     {
@@ -40,7 +76,10 @@ const PostedJobs = () => {
       render: (text: string, record: DisplayJob) => (
         <div className="d-flex gap-3 align-items-center">
           <span className="underline">candidates</span>
-          <i className="ri-delete-bin-line"></i>
+          <i
+            className="ri-delete-bin-line"
+            onClick={() => handleDelete(record.id)}
+          ></i>
           <i
             className="ri-pencil-line"
             onClick={() => navigate(`/posted-jobs/edit/${record.id}`)}
@@ -51,25 +90,8 @@ const PostedJobs = () => {
   ];
 
   useEffect(() => {
-    const getDocs = async () => {
-      try {
-        dispatch(showLoading());
-        const res = await getJobsByUser(user.id);
-        if (res) {
-          if (res.success) {
-            setData(res.data!);
-          }
-        }
-        dispatch(hideLoading());
-      } catch (e) {
-        if (e instanceof Error) {
-          dispatch(hideLoading());
-          message.error(e.message);
-        }
-      }
-    };
     getDocs();
-  }, [dispatch, user.id]);
+  }, [getDocs]);
 
   return (
     <div>

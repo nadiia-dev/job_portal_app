@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -48,7 +49,6 @@ export const getJobsByUser = async (userId: string) => {
         });
       }
     });
-    console.log(jobs);
     return {
       success: true,
       data: jobs,
@@ -97,6 +97,24 @@ export const updateJob = async (payload: DisplayJob) => {
     return {
       success: true,
       message: "Job updated successfully",
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const deleteJob = async (id: string) => {
+  try {
+    const docRef = doc(fireDb, "jobs", id);
+    await deleteDoc(docRef);
+    return {
+      success: true,
+      message: "Job deleted successfully",
     };
   } catch (e) {
     if (e instanceof Error) {
