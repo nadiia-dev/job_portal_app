@@ -39,7 +39,7 @@ const Home = () => {
       <PageTitle title="Welcome to Job Portal!" />
       <Row gutter={[15, 15]} className="mt-3">
         {data.map((job) => (
-          <Col span={8}>
+          <Col span={18}>
             <div className="job-card">
               <h3 className="uppercase">{job.title}</h3>
               <div className="light-divider"></div>

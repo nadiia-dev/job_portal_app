@@ -14,6 +14,7 @@ import PostedJobs from "./pages/user/postedjobs";
 import NewEditJob from "./pages/user/postedjobs/NewEditJob";
 import AllJobs from "./pages/admin/AllJobs";
 import AllUsers from "./pages/admin/AllUsers";
+import JobDescription from "./pages/JobDescription";
 
 function App() {
   const isLoading = useSelector((state: RootState) => state.alert.loading);
@@ -92,6 +93,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AllUsers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/job-description/:id"
+            element={
+              <ProtectedRoute>
+                <JobDescription />
               </ProtectedRoute>
             }
           />
