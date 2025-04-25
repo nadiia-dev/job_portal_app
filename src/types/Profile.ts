@@ -23,6 +23,7 @@ export interface Project {
 }
 
 export interface ProfileValues {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -34,4 +35,5 @@ export interface ProfileValues {
   skills?: Skills[];
   experinces?: Experience[];
   projects?: Project[];
+  status: string;
 }

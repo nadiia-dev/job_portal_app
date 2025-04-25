@@ -59,6 +59,7 @@ export const loginApi = async (payload: User) => {
           name: data.name,
           email: data.email,
           password: data.password,
+          isAdmin: data.isAdmin || false,
         } as User;
       });
       const user = snapshotData[0];

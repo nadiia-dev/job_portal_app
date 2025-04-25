@@ -1,4 +1,11 @@
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { ProfileValues } from "../types/Profile";
 import { fireDb } from "../firebaseConfig";
 
@@ -6,6 +13,7 @@ export const updateUserProfile = async (payload: ProfileValues) => {
   const user = JSON.parse(localStorage.getItem("user")!);
 
   const safePayload: ProfileValues = {
+    id: user.id || "",
     firstName: payload.firstName,
     lastName: payload.lastName,
     email: payload.email,
@@ -17,6 +25,7 @@ export const updateUserProfile = async (payload: ProfileValues) => {
     skills: payload.skills ?? [],
     experinces: payload.experinces ?? [],
     projects: payload.projects ?? [],
+    status: payload.status || "pending",
   };
 
   try {
@@ -51,6 +60,49 @@ export const getProfile = async (id: string) => {
         message: "No such user!",
       };
     }
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const getAllUsers = async () => {
+  try {
+    const docSnap = await getDocs(collection(fireDb, "users"));
+    const users: ProfileValues[] = [];
+    docSnap.forEach((doc) => {
+      users.push({
+        ...(doc.data() as ProfileValues),
+        id: doc.id,
+      });
+    });
+    return {
+      success: true,
+      data: users,
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const updateUserStatus = async (id: string, status: string) => {
+  try {
+    await updateDoc(doc(fireDb, "users", id), {
+      status,
+    });
+    return {
+      success: true,
+      message: "User status updated successfully",
+    };
   } catch (e) {
     if (e instanceof Error) {
       return {

@@ -125,3 +125,27 @@ export const deleteJob = async (id: string) => {
     }
   }
 };
+
+export const getAllJobs = async () => {
+  try {
+    const docSnap = await getDocs(collection(fireDb, "jobs"));
+    const jobs: DisplayJob[] = [];
+    docSnap.forEach((doc) => {
+      jobs.push({
+        ...(doc.data() as DisplayJob),
+        id: doc.id,
+      });
+    });
+    return {
+      success: true,
+      data: jobs,
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
