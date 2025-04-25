@@ -25,7 +25,7 @@ const ReadNotificationsList = ({ read, changeStatus }: Props) => {
               </div>
               <span
                 className="underline"
-                onClick={() => changeStatus(notification.id, "read")}
+                onClick={() => changeStatus(notification.id, "unread")}
               >
                 Mark as unread
               </span>

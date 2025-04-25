@@ -153,3 +153,23 @@ export const getNotifications = async () => {
     }
   }
 };
+
+export const changeNotificationStatus = async (id: string, status: string) => {
+  const user = JSON.parse(localStorage.getItem("user")!);
+  try {
+    await updateDoc(doc(fireDb, "users", user.id, "notifications", id), {
+      status,
+    });
+    return {
+      success: true,
+      message: "Notification status changed",
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
