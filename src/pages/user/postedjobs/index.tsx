@@ -1,11 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import PageTitle from "../../../components/PageTitle";
 import { useCallback, useEffect, useState } from "react";
-import {
-  deleteJob,
-  getApplicationsByJobId,
-  getJobsByUser,
-} from "../../../api/jobsApi";
+import { deleteJob, getJobsByUser } from "../../../api/jobsApi";
+import { getApplicationsByJobId } from "../../../api/applicationsApi";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../../redux/alertSlice";
 import { message, Table } from "antd";

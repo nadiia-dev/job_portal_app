@@ -3,7 +3,7 @@ import { Application } from "../../../types/Application";
 import { useNavigate } from "react-router-dom";
 import { hideLoading, showLoading } from "../../../redux/alertSlice";
 import { useDispatch } from "react-redux";
-import { changeApplicationStatus } from "../../../api/jobsApi";
+import { changeApplicationStatus } from "../../../api/applicationsApi";
 
 interface Props {
   showAppliedCandidates: boolean;

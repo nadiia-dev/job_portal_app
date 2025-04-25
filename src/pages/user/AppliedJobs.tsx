@@ -2,7 +2,7 @@ import { message, Table } from "antd";
 import PageTitle from "../../components/PageTitle";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getApplicationsByUserId } from "../../api/jobsApi";
+import { getApplicationsByUserId } from "../../api/applicationsApi";
 import { hideLoading, showLoading } from "../../redux/alertSlice";
 import { Application } from "../../types/Application";
 

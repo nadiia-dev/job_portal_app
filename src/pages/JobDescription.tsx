@@ -3,11 +3,8 @@ import { DisplayJob } from "../types/DisplayJob";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/alertSlice";
-import {
-  applyForJob,
-  getApplicationsByJobId,
-  getJobById,
-} from "../api/jobsApi";
+import { getJobById } from "../api/jobsApi";
+import { applyForJob, getApplicationsByJobId } from "../api/applicationsApi";
 import { Col, message, Row } from "antd";
 import PageTitle from "../components/PageTitle";
 
