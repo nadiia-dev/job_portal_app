@@ -78,7 +78,7 @@ const AppliedCandidates = ({
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: Application) => {
+      render: (_text: string, record: Application) => {
         return (
           <div>
             {record.status === "pending" && (

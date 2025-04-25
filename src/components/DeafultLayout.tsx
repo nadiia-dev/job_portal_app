@@ -5,6 +5,7 @@ import { hideLoading, showLoading } from "../redux/alertSlice";
 import { getNotifications, getProfile } from "../api/userApi";
 import { RootState } from "../redux/store";
 import { Badge } from "antd";
+import { setReadNotifications } from "../redux/notificationsSlice";
 
 type MenuItem = {
   title: string;
@@ -123,14 +124,17 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
         dispatch(showLoading());
         await getNotifications();
         dispatch(hideLoading());
+        dispatch(setReadNotifications(false));
       } catch (e) {
         if (e instanceof Error) {
           dispatch(hideLoading());
         }
       }
     };
-    loadNotifications();
-  }, [dispatch]);
+    if (reload) {
+      loadNotifications();
+    }
+  }, [dispatch, reload]);
 
   return (
     <div className="layout">

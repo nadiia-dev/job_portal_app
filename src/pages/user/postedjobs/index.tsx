@@ -99,7 +99,7 @@ const PostedJobs = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: DisplayJob) => (
+      render: (_text: string, record: DisplayJob) => (
         <div className="d-flex gap-3 align-items-center">
           <span
             className="underline"

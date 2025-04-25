@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
   QueryConstraint,
   updateDoc,
@@ -50,7 +51,8 @@ export const saveJob = async (payload: Job) => {
 
 export const getJobsByUser = async (userId: string) => {
   try {
-    const docSnap = await getDocs(collection(fireDb, "jobs"));
+    const q = query(collection(fireDb, "jobs"), orderBy("postedOn", "desc"));
+    const docSnap = await getDocs(q);
     const jobs: DisplayJob[] = [];
     docSnap.forEach((doc) => {
       if (doc.data().postedByUserId === userId) {

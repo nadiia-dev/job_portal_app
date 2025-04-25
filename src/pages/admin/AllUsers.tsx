@@ -66,7 +66,7 @@ const AllUsers = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (text: string, record: ProfileValues) => (
+      render: (_text: string, record: ProfileValues) => (
         <div className="d-flex gap-2 align-items-center">
           {record.status === "approved" && (
             <span
