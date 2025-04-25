@@ -1,4 +1,11 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { Job } from "../types/Job";
 import { fireDb } from "../firebaseConfig";
 import moment from "moment";
@@ -37,12 +44,59 @@ export const getJobsByUser = async (userId: string) => {
       if (doc.data().postedByUserId === userId) {
         jobs.push({
           ...(doc.data() as DisplayJob),
+          id: doc.id,
         });
       }
     });
+    console.log(jobs);
     return {
       success: true,
       data: jobs,
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const getJobById = async (id: string) => {
+  try {
+    const docRef = doc(fireDb, "jobs", id);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return {
+        success: true,
+        data: docSnap.data(),
+      };
+    } else {
+      return {
+        success: false,
+        message: "No such job!",
+      };
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const updateJob = async (payload: DisplayJob) => {
+  try {
+    await updateDoc(doc(fireDb, "jobs", payload.id), {
+      ...payload,
+      updatedOn: moment().format("DD-MM-YYYY HH:mm A"),
+    });
+    return {
+      success: true,
+      message: "Job updated successfully",
     };
   } catch (e) {
     if (e instanceof Error) {

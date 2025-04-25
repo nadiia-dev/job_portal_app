@@ -69,7 +69,7 @@ function App() {
             }
           />
           <Route
-            path="/posted-jobs/:id"
+            path="/posted-jobs/edit/:id"
             element={
               <ProtectedRoute>
                 <NewEditJob />

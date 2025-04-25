@@ -10,6 +10,7 @@ export interface DisplayJob {
   experience: string;
   noticePeriod: string;
   jobDescription: string;
+  status: string;
   postedByUserId: string;
   postedByUserName: string;
   postedOn: string;

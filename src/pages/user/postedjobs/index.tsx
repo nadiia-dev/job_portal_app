@@ -55,7 +55,6 @@ const PostedJobs = () => {
       try {
         dispatch(showLoading());
         const res = await getJobsByUser(user.id);
-        console.log(res);
         if (res) {
           if (res.success) {
             setData(res.data!);
