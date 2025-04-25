@@ -16,6 +16,7 @@ import AllJobs from "./pages/admin/AllJobs";
 import AllUsers from "./pages/admin/AllUsers";
 import JobDescription from "./pages/JobDescription";
 import AppliedJobs from "./pages/user/AppliedJobs";
+import Notifications from "./pages/Notifications";
 
 function App() {
   const isLoading = useSelector((state: RootState) => state.alert.loading);
@@ -110,6 +111,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AppliedJobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute>
+                <Notifications />
               </ProtectedRoute>
             }
           />

@@ -128,6 +128,12 @@ export const changeApplicationStatus = async (payload: Application) => {
       ...payload,
       updatedOn: moment().format("DD-MM-YYYY HH:mm A"),
     });
+    await addDoc(collection(fireDb, `users/${payload.userId}/notifications`), {
+      title: `Your application for ${payload.jobTitle} in ${payload.company} is ${payload.status}`,
+      onClick: `/applied-jobs`,
+      status: "unread",
+      createdAt: moment().format("DD-MM-YYYY HH:mm A"),
+    });
     return {
       success: true,
       message: "Application status updated successfully",

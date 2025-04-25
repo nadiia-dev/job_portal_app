@@ -3,11 +3,19 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
+  query,
   setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { ProfileValues } from "../types/Profile";
 import { fireDb } from "../firebaseConfig";
+import { Notification } from "../types/Notification";
+import {
+  setReadNotifications,
+  setUnreadNotifications,
+} from "../redux/notificationsSlice";
+import store from "../redux/store";
 
 export const updateUserProfile = async (payload: ProfileValues) => {
   const user = JSON.parse(localStorage.getItem("user")!);
@@ -102,6 +110,39 @@ export const updateUserStatus = async (id: string, status: string) => {
     return {
       success: true,
       message: "User status updated successfully",
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const getNotifications = async () => {
+  const user = JSON.parse(localStorage.getItem("user")!);
+  try {
+    const q = query(collection(fireDb, "users", user.id, "notifications"));
+    onSnapshot(q, (querySnapshot) => {
+      const notifications: Notification[] = [];
+      querySnapshot.forEach((doc) => {
+        notifications.push({ ...(doc.data() as Notification), id: doc.id });
+      });
+
+      const readNotifications = notifications.filter(
+        (notification) => notification.status === "read"
+      );
+      const unreadNotifications = notifications.filter(
+        (notification) => notification.status === "unread"
+      );
+      store.dispatch(setReadNotifications(readNotifications));
+      store.dispatch(setUnreadNotifications(unreadNotifications));
+    });
+
+    return {
+      success: true,
     };
   } catch (e) {
     if (e instanceof Error) {

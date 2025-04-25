@@ -1,8 +1,10 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { hideLoading, showLoading } from "../redux/alertSlice";
-import { getProfile } from "../api/userApi";
+import { getNotifications, getProfile } from "../api/userApi";
+import { RootState } from "../redux/store";
+import { Badge } from "antd";
 
 type MenuItem = {
   title: string;
@@ -15,6 +17,9 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(false);
+  const { reload, unread } = useSelector(
+    (state: RootState) => state.notifications
+  );
   const user = JSON.parse(localStorage.getItem("user")!);
   const [menuToRender, setMenuToRender] = useState<MenuItem[]>([]);
 
@@ -112,6 +117,21 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
     getData();
   }, [getData]);
 
+  useEffect(() => {
+    const loadNotifications = async () => {
+      try {
+        dispatch(showLoading());
+        await getNotifications();
+        dispatch(hideLoading());
+      } catch (e) {
+        if (e instanceof Error) {
+          dispatch(hideLoading());
+        }
+      }
+    };
+    loadNotifications();
+  }, [dispatch]);
+
   return (
     <div className="layout">
       <div className="sidebar justify-content-between flex">
@@ -154,6 +174,13 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
             <span className="logo">JOB PORTAL APP</span>
           </div>
           <div className="d-flex gap-1 align-items-center">
+            <Badge
+              count={unread?.length || 0}
+              className="mx-5"
+              onClick={() => navigate("/notifications")}
+            >
+              <i className="ri-notification-line"></i>
+            </Badge>
             <span>{user?.name}</span>
             <i className="ri-shield-user-line"></i>
           </div>
