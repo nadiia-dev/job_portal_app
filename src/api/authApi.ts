@@ -52,11 +52,17 @@ export const loginApi = async (payload: User) => {
         message: "User not found",
       };
     } else {
-      const snapshotData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as User),
-      })) as User[];
+      const snapshotData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        } as User;
+      });
       const user = snapshotData[0];
+
       const decryptedPassword = CryptoJS.AES.decrypt(
         user.password,
         "job_portal_app"

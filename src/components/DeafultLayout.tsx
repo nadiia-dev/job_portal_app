@@ -1,45 +1,117 @@
-import { useState } from "react";
+import { JSX, useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { hideLoading, showLoading } from "../redux/alertSlice";
+import { getProfile } from "../api/userApi";
+
+type MenuItem = {
+  title: string;
+  onClick: () => void;
+  icon: JSX.Element;
+  path: string;
+};
 
 const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(false);
   const user = JSON.parse(localStorage.getItem("user")!);
-  const userMenu = [
-    {
-      title: "Home",
-      onClick: () => navigate("/"),
-      icon: <i className="ri-home-7-line"></i>,
-      path: "/",
-    },
-    {
-      title: "Applied Jobs",
-      onClick: () => navigate("/applied-jobs"),
-      icon: <i className="ri-file-list-3-line"></i>,
-      path: "/applied-jobs",
-    },
-    {
-      title: "Posted Jobs",
-      onClick: () => navigate("/posted-jobs"),
-      icon: <i className="ri-file-list-2-line"></i>,
-      path: "/posted-jobs",
-    },
-    {
-      title: "Profile",
-      onClick: () => navigate(`/profile/${user.id}`),
-      icon: <i className="ri-user-2-line"></i>,
-      path: "/profile",
-    },
-    {
-      title: "Logout",
-      onClick: () => {
-        localStorage.removeItem("user");
-        navigate("/login");
+  const [menuToRender, setMenuToRender] = useState<MenuItem[]>([]);
+
+  const userMenu = useMemo(
+    () => [
+      {
+        title: "Home",
+        onClick: () => navigate("/"),
+        icon: <i className="ri-home-7-line"></i>,
+        path: "/",
       },
-      icon: <i className="ri-logout-box-r-line"></i>,
-      path: "/login",
-    },
-  ];
+      {
+        title: "Applied Jobs",
+        onClick: () => navigate("/applied-jobs"),
+        icon: <i className="ri-file-list-3-line"></i>,
+        path: "/applied-jobs",
+      },
+      {
+        title: "Posted Jobs",
+        onClick: () => navigate("/posted-jobs"),
+        icon: <i className="ri-file-list-2-line"></i>,
+        path: "/posted-jobs",
+      },
+      {
+        title: "Profile",
+        onClick: () => navigate(`/profile/${user.id}`),
+        icon: <i className="ri-user-2-line"></i>,
+        path: "/profile",
+      },
+      {
+        title: "Logout",
+        onClick: () => {
+          localStorage.removeItem("user");
+          navigate("/login");
+        },
+        icon: <i className="ri-logout-box-r-line"></i>,
+        path: "/login",
+      },
+    ],
+    [navigate, user.id]
+  );
+
+  const adminMenu = useMemo(
+    () => [
+      {
+        title: "Home",
+        onClick: () => navigate("/"),
+        icon: <i className="ri-home-7-line"></i>,
+        path: "/",
+      },
+      {
+        title: "Jobs",
+        onClick: () => navigate("/admin/jobs"),
+        icon: <i className="ri-file-list-2-line"></i>,
+        path: "/admin/jobs",
+      },
+      {
+        title: "Users",
+        onClick: () => navigate("/admin/users"),
+        icon: <i className="ri-user-2-line"></i>,
+        path: "/admin/users",
+      },
+      {
+        title: "Logout",
+        onClick: () => {
+          localStorage.removeItem("user");
+          navigate("/login");
+        },
+        icon: <i className="ri-logout-box-r-line"></i>,
+        path: "/login",
+      },
+    ],
+    [navigate]
+  );
+
+  const getData = useCallback(async () => {
+    try {
+      dispatch(showLoading());
+      const response = await getProfile(user.id);
+
+      dispatch(hideLoading());
+      if (response) {
+        if (response.data?.isAdmin === true) {
+          setMenuToRender(adminMenu);
+        } else {
+          setMenuToRender(userMenu);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user.id, dispatch, adminMenu, userMenu]);
+
+  useEffect(() => {
+    getData();
+  }, [getData]);
+
   return (
     <div className="layout">
       <div className="sidebar justify-content-between flex">
@@ -49,7 +121,7 @@ const DeafultLayout = ({ children }: { children: React.ReactNode }) => {
             width: collapsed ? "40px" : "150px",
           }}
         >
-          {userMenu.map((item, index) => {
+          {menuToRender.map((item, index) => {
             const isActive = window.location.pathname === item.path;
             return (
               <div

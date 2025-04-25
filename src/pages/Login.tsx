@@ -12,8 +12,10 @@ const Login = () => {
     try {
       dispatch(showLoading());
       const res = await loginApi(inputs);
+      console.log(res);
       dispatch(hideLoading());
       if (res) {
+        console.log(res.data);
         message.success(res.message);
         localStorage.setItem("user", JSON.stringify(res.data));
         window.location.href = "/";

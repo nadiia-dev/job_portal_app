@@ -4,6 +4,7 @@ import { fireDb } from "../firebaseConfig";
 
 export const updateUserProfile = async (payload: ProfileValues) => {
   const user = JSON.parse(localStorage.getItem("user")!);
+
   const safePayload: ProfileValues = {
     firstName: payload.firstName,
     lastName: payload.lastName,
@@ -19,7 +20,7 @@ export const updateUserProfile = async (payload: ProfileValues) => {
   };
 
   try {
-    await setDoc(doc(fireDb, "users", user.id), safePayload);
+    await setDoc(doc(fireDb, "users", user.id), safePayload, { merge: true });
     return {
       success: true,
       message: "Profile updated successfully",
