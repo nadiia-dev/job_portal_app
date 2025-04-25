@@ -3,7 +3,11 @@ import { DisplayJob } from "../types/DisplayJob";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/alertSlice";
-import { getJobById } from "../api/jobsApi";
+import {
+  applyForJob,
+  getApplicationsByJobId,
+  getJobById,
+} from "../api/jobsApi";
 import { Col, message, Row } from "antd";
 import PageTitle from "../components/PageTitle";
 
@@ -29,7 +33,10 @@ const JobDescription = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showApplyButton, setShowApplyButton] = useState(true);
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
   const [jobData, setJobData] = useState<DisplayJob | null>(null);
+  const user = JSON.parse(localStorage.getItem("user")!);
 
   useEffect(() => {
     const getDoc = async () => {
@@ -37,6 +44,17 @@ const JobDescription = () => {
         dispatch(showLoading());
         const res = await getJobById(params.id!);
         dispatch(hideLoading());
+
+        const applicationsResponse = await getApplicationsByJobId(params.id!);
+        if (applicationsResponse) {
+          if (
+            applicationsResponse.data!.filter((item) => item.userId === user.id)
+              .length > 0
+          ) {
+            setShowApplyButton(false);
+            setAlreadyApplied(true);
+          }
+        }
         if (res) {
           if (res.success) {
             setJobData((res.data as DisplayJob) ?? initialFormValues);
@@ -57,7 +75,29 @@ const JobDescription = () => {
     } else {
       setJobData(initialFormValues);
     }
-  }, [dispatch, params.id]);
+  }, [dispatch, params.id, user.id]);
+
+  const applyNow = async () => {
+    try {
+      dispatch(showLoading());
+      const res = await applyForJob(jobData ?? initialFormValues);
+      dispatch(hideLoading());
+      if (res) {
+        if (res.success) {
+          message.success(res.message);
+          navigate("/");
+        } else {
+          message.error(res.message);
+        }
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        dispatch(hideLoading());
+        message.error(e.message);
+      }
+    }
+  };
+
   return (
     <>
       {jobData && (
@@ -110,6 +150,15 @@ const JobDescription = () => {
                 <h5 className="underline uppercase my-3">Job Description</h5>
                 <span className="pt-2">{jobData.jobDescription}</span>
 
+                {alreadyApplied && (
+                  <div className="already-applied">
+                    <span>
+                      You have already applied for this job. You can view your
+                      application status in the applied jobs section.
+                    </span>
+                  </div>
+                )}
+
                 <div className="d-flex gap-2 mt-3 justify-content-end">
                   <button
                     className="primary-outlined-btn"
@@ -118,7 +167,14 @@ const JobDescription = () => {
                     CANCEL
                   </button>
 
-                  <button className="primary-contained-btn">APPLY NOW</button>
+                  {showApplyButton && (
+                    <button
+                      className="primary-contained-btn"
+                      onClick={applyNow}
+                    >
+                      APPLY NOW
+                    </button>
+                  )}
                 </div>
               </div>
             </Col>
