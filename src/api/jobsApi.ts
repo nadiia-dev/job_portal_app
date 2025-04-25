@@ -5,12 +5,16 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
+  QueryConstraint,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { Job } from "../types/Job";
 import { fireDb } from "../firebaseConfig";
 import moment from "moment";
 import { DisplayJob } from "../types/DisplayJob";
+import { FiltersType } from "../types/Filters";
 
 const user = JSON.parse(localStorage.getItem("user")!);
 
@@ -162,9 +166,18 @@ export const deleteJob = async (id: string) => {
   }
 };
 
-export const getAllJobs = async () => {
+export const getAllJobs = async (filters?: FiltersType) => {
   try {
-    const docSnap = await getDocs(collection(fireDb, "jobs"));
+    const whereClause: QueryConstraint[] = [];
+    if (filters) {
+      Object.keys(filters).forEach((key) => {
+        if (filters[key]) {
+          whereClause.push(where(key, "==", filters[key]));
+        }
+      });
+    }
+    const q = query(collection(fireDb, "jobs"), ...whereClause);
+    const docSnap = await getDocs(q);
     const jobs: DisplayJob[] = [];
     docSnap.forEach((doc) => {
       jobs.push({

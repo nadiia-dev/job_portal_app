@@ -6,11 +6,14 @@ import { hideLoading, showLoading } from "../redux/alertSlice";
 import { getAllJobs } from "../api/jobsApi";
 import { Col, message, Row } from "antd";
 import PageTitle from "../components/PageTitle";
+import Filters from "../components/Filters";
+import { FiltersType } from "../types/Filters";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [data, setData] = useState<DisplayJob[]>([]);
+  const [filters, setFilters] = useState<FiltersType>({});
 
   const getDocs = useCallback(async () => {
     try {
@@ -39,10 +42,13 @@ const Home = () => {
 
   return (
     <>
+      <div className="mb-4">
+        <Filters filters={filters} setFilters={setFilters} setData={setData} />
+      </div>
       <PageTitle title="Welcome to Job Portal!" />
       <Row gutter={[15, 15]} className="mt-3">
         {data.map((job) => (
-          <Col span={18}>
+          <Col span={8}>
             <div className="job-card">
               <h3 className="uppercase">{job.title}</h3>
               <div className="light-divider"></div>
