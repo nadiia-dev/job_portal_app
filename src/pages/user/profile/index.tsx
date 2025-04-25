@@ -3,7 +3,7 @@ import PageTitle from "../../../components/PageTitle";
 import PersonalInfo from "./PersonalInfo";
 import Education from "./Education";
 import Experience from "./Experience";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ProfileValues } from "../../../types/Profile";
 import { getProfile, updateUserProfile } from "../../../api/userApi";
 import { useDispatch } from "react-redux";
@@ -29,6 +29,7 @@ const items = [
 ];
 
 const initialFormValues: ProfileValues = {
+  id: "",
   firstName: "",
   lastName: "",
   email: "",
@@ -36,6 +37,7 @@ const initialFormValues: ProfileValues = {
   portfolio: "",
   carrierObjective: "",
   address: "",
+  status: "",
   education: [],
   skills: [],
   experinces: [],
@@ -45,14 +47,16 @@ const initialFormValues: ProfileValues = {
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const params = useParams();
   const [userData, setUserData] = useState<ProfileValues | null>(null);
+  const user = JSON.parse(localStorage.getItem("user")!);
 
   useEffect(() => {
     const getData = async () => {
       try {
         dispatch(showLoading());
-        const user = JSON.parse(localStorage.getItem("user")!);
-        const res = await getProfile(user.id);
+
+        const res = await getProfile(params.id!);
         dispatch(hideLoading());
         if (res) {
           if (res.success) {
@@ -68,7 +72,7 @@ const Profile = () => {
       }
     };
     getData();
-  }, [dispatch]);
+  }, [dispatch, params.id]);
 
   const onFinish = async (values: ProfileValues) => {
     try {
@@ -104,9 +108,11 @@ const Profile = () => {
             >
               Cancel
             </button>
-            <button type="submit" className="primary-contained-btn">
-              Save
-            </button>
+            {params.id === user.id && (
+              <button type="submit" className="primary-contained-btn">
+                Save
+              </button>
+            )}
           </div>
         </Form>
       )}
