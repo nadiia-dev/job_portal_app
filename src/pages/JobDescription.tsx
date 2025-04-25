@@ -45,6 +45,12 @@ const JobDescription = () => {
         const res = await getJobById(params.id!);
         dispatch(hideLoading());
 
+        if (res) {
+          if (res.data!.postedByUserId === user.id) {
+            setShowApplyButton(false);
+          }
+        }
+
         const applicationsResponse = await getApplicationsByJobId(params.id!);
         if (applicationsResponse) {
           if (
