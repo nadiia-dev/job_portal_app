@@ -23,6 +23,12 @@ export const saveJob = async (payload: Job) => {
       postedByUserName: user.name,
       postedOn: moment().format("DD-MM-YYYY HH:mm A"),
     });
+    await addDoc(collection(fireDb, "users", "admin", "notifications"), {
+      title: `New Job Post Request from ${user.name}`,
+      onClick: `/admin/jobs`,
+      createdAt: moment().format("DD-MM-YYYY HH:mm A"),
+      status: "unread",
+    });
     return {
       success: true,
       message: "New job posted successfully",
@@ -95,6 +101,35 @@ export const updateJob = async (payload: DisplayJob) => {
       ...payload,
       updatedOn: moment().format("DD-MM-YYYY HH:mm A"),
     });
+    return {
+      success: true,
+      message: "Job updated successfully",
+    };
+  } catch (e) {
+    if (e instanceof Error) {
+      return {
+        success: false,
+        message: "Something went wrong",
+      };
+    }
+  }
+};
+
+export const updateJobStatus = async (payload: DisplayJob) => {
+  try {
+    await updateDoc(doc(fireDb, "jobs", payload.id), {
+      ...payload,
+      updatedOn: moment().format("DD-MM-YYYY HH:mm A"),
+    });
+    await addDoc(
+      collection(fireDb, "users", payload.postedByUserId, "notifications"),
+      {
+        title: `Your job post request for ${payload.title} has been ${payload.status}`,
+        onClick: `/posted-jobs`,
+        createdAt: moment().format("DD-MM-YYYY HH:mm A"),
+        status: "unread",
+      }
+    );
     return {
       success: true,
       message: "Job updated successfully",

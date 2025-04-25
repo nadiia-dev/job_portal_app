@@ -18,7 +18,10 @@ const Home = () => {
       const res = await getAllJobs();
       if (res) {
         if (res.success) {
-          setData(res.data!);
+          const approvedJobs = res.data!.filter(
+            (job) => job.status === "approved"
+          );
+          setData(approvedJobs);
         }
       }
       dispatch(hideLoading());
